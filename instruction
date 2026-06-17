@@ -1,0 +1,9 @@
+## memos-claude
+memosで特定のタグを使用するとそれに応じた応答をclaude apiで作成し、commentに追加するbotを作成する。
+
+- memoが追加されたwebhookを受け取る
+- 特定のタグが含まれているならSQLiteで前回呼び出し時刻を確認
+- 一定の間隔があいていなければreject, それをコメントに追加
+- acceptされたらclaudeにAPIを投げる、システムプロンプトは @src/claude_api.ts に定義済み
+	- タグもそのキーを参照すること
+- APIの返答は当該memoのcommentに吊り下げる感じで。
