@@ -1,9 +1,7 @@
 import express from 'express';
-import { SYSTEMPROMPT, callClaude, type Tag } from './claude_api.js';
+import { getValidTags, callClaude } from './claude_api.js';
 import { checkAndUpdate } from './db.js';
 import { postComment } from './memos_api.js';
-
-const VALID_TAGS = Object.keys(SYSTEMPROMPT) as Tag[];
 const BOT_USERNAME = process.env.BOT_USERNAME ?? null;
 
 const app = express();
@@ -55,9 +53,10 @@ async function handleWebhook(body: unknown): Promise<void> {
     return;
   }
 
-  const tag = VALID_TAGS.find((t) => tags.includes(t));
+  const validTags = getValidTags();
+  const tag = validTags.find((t) => tags.includes(t));
   if (!tag) {
-    console.log(`[webhook] no valid tag found (valid: ${VALID_TAGS.join(', ')}), skipping`);
+    console.log(`[webhook] no valid tag found (valid: ${validTags.join(', ')}), skipping`);
     return;
   }
 
