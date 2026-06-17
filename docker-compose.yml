@@ -4,6 +4,8 @@ services:
     container_name: memos
     ports:
       - "5230:5230"
+	enviroment:
+      MEMOS_ALLOW_PRIVATE_WEBHOOKS: true
     volumes:
       - ~/.memos:/var/opt/memos
     networks:
@@ -18,7 +20,6 @@ services:
     env_file: .env
     environment:
       MEMOS_HOST: http://memos:5230
-      MEMOS_ALLOW_PRIVATE_WEBHOOKS: true
     volumes:
       - ./data:/app/data
     depends_on:
