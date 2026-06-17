@@ -4,7 +4,7 @@ import { checkAndUpdate } from './db.js';
 import { postComment } from './memos_api.js';
 
 const VALID_TAGS = Object.keys(SYSTEMPROMPT) as Tag[];
-const BOT_CREATOR_ID = process.env.BOT_CREATOR_ID ? Number(process.env.BOT_CREATOR_ID) : null;
+const BOT_USERNAME = process.env.BOT_USERNAME ?? null;
 
 const app = express();
 app.use(express.json());
@@ -28,7 +28,7 @@ async function handleWebhook(body: unknown): Promise<void> {
     return;
   }
 
-  const memo = (b.payload as Record<string, unknown>)?.memo as
+  const memo = (b.memo ?? (b.payload as Record<string, unknown>)?.memo) as
     | Record<string, unknown>
     | undefined;
   if (!memo) {
@@ -38,18 +38,19 @@ async function handleWebhook(body: unknown): Promise<void> {
 
   const memoName = memo.name as string | undefined;
   const content = memo.content as string | undefined;
-  const creatorId = memo.creatorId as number | undefined;
+  const creatorStr = (memo.creator ?? b.creator) as string | undefined;
   const visibility = memo.visibility as number | undefined;
   const tags = (memo.tags as string[] | undefined) ?? [];
 
-  console.log(`[webhook] memoName=${memoName} creatorId=${creatorId} tags=${JSON.stringify(tags)}`);
+  console.log(`[webhook] memoName=${memoName} creator=${creatorStr} tags=${JSON.stringify(tags)}`);
 
-  if (!memoName || !content || creatorId == null) {
+  if (!memoName || !content || !creatorStr) {
     console.log('[webhook] missing required fields, skipping');
     return;
   }
 
-  if (BOT_CREATOR_ID !== null && creatorId === BOT_CREATOR_ID) {
+  const botCreatorName = BOT_USERNAME !== null ? `users/${BOT_USERNAME}` : null;
+  if (botCreatorName !== null && creatorStr === botCreatorName) {
     console.log('[webhook] skipping: created by bot itself');
     return;
   }
@@ -62,7 +63,7 @@ async function handleWebhook(body: unknown): Promise<void> {
 
   console.log(`[webhook] processing tag=${tag} for memo=${memoName}`);
 
-  const result = checkAndUpdate(creatorId, tag);
+  const result = checkAndUpdate(creatorStr, tag);
   if (!result.allowed) {
     await postComment(
       memoName,

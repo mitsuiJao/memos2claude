@@ -24,7 +24,7 @@ const upsertStmt = db.prepare(
 );
 
 export function checkAndUpdate(
-  creatorId: number,
+  creatorId: string,
   tag: string
 ): { allowed: boolean; waitSeconds?: number } {
   const now = Math.floor(Date.now() / 1000);
