@@ -14,7 +14,7 @@ db.exec(`
   )
 `);
 
-const RATE_LIMIT_SECONDS = 300;
+const RATE_LIMIT_SECONDS = process.env.RATE_LIMIT_SECONDS ? Number(process.env.RATE_LIMIT_SECONDS) : 300;
 
 const selectStmt = db.prepare(
   'SELECT last_called_at FROM rate_limits WHERE creator_id = ? AND tag = ?'

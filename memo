@@ -64,3 +64,34 @@
   停止
 
   docker compose down
+
+
+
+
+  ---
+  Bot ユーザーの設定（他ユーザーのメモに返信させる場合）
+
+  1. Memos で Bot 用アカウントを作成（管理者画面 → Users → Create User）
+
+  2. Bot ユーザーを ADMIN に昇格（コメント投稿権限のため）
+
+     sqlite3 ~/.memos/memos_prod.db "UPDATE user SET role='ADMIN' WHERE username='claude';"
+
+  3. Bot ユーザーの PAT を取得（Bot でログイン → Settings → Access Tokens）
+
+  4. .env を更新
+
+     MEMOS_TOKEN=<BotユーザーのPAT>
+     BOT_USERNAME=claude   # Bot のユーザー名（自己レスループ防止用）
+
+  5. 各ユーザーが自分の Memos Settings → Webhooks で登録
+
+     URL: http://memos-claude:3000/webhook
+
+  6. ユーザー一覧・ID 確認
+
+     sqlite3 ~/.memos/memos_prod.db "SELECT id, username, role FROM user;"
+
+  7. レート制限のリセット（必要時）
+
+     sqlite3 /path/to/memos_claude/data/rate_limit.db "DELETE FROM rate_limits;"
