@@ -27,4 +27,4 @@ docker compose up -d
 docker compose pull && docker compose up -d
 ```
 
-そのあと起動コマンドを実行してください
+### 

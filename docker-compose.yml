@@ -4,7 +4,7 @@ services:
     container_name: memos
     ports:
       - "5230:5230"
-	enviroment:
+    environment:
       MEMOS_ALLOW_PRIVATE_WEBHOOKS: true
     volumes:
       - ~/.memos:/var/opt/memos
@@ -13,7 +13,7 @@ services:
     restart: unless-stopped
 
   memos-claude:
-    image: ghcr.io/mitsuijao/memos_claude:latest
+    image: ghcr.io/mitsuijao/memos2claude:latest
     container_name: memos-claude
     ports:
       - "3000:3000"
